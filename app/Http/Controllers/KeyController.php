@@ -15,7 +15,7 @@ class KeyController extends Controller
             'client_id'=> '6eded995112346d8aa49254b94d31e5b',
             'client_secret'=> '4f33f9955a6748e0b678f94d57bed679'
         ]);
-
-        return view('/keycall')->with('token', $token);
+        return $token->json();
+        //return view('/keycall')->with('token', $token);
     }
 }
