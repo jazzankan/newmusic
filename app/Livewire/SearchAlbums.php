@@ -14,10 +14,13 @@ class SearchAlbums extends Component
         $this->token = (new KeyController)->index();
         $this->token = $this->token['access_token'];
         $this->response = Http::withHeaders(['Authorization'=> 'Bearer '.$this->token
-        ])->get(url:'https://api.spotify.com/v1/artists/5N87utqQzCT8NHBW7JJXog')['genres'][2];
+        ])->get(url:'https://api.spotify.com/v1/artists/4gquwMHteaMQ0ZQOMj9CsI/albums')->json();
+       //dd($this->response["items"][2]["name"]);
+        return $this->response;
     }
 
 // Ellen id: 5N87utqQzCT8NHBW7JJXog
+// Gulin id: 4gquwMHteaMQ0ZQOMj9CsI
 
     public function render()
     {
