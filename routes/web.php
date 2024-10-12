@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArtistsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KeyController;
 
@@ -19,6 +20,9 @@ Route::get('/keycall', [KeyController::class, 'index'])
 Route::view('/search', 'search')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+Route::resource('artists', ArtistsController::class)
+    ->middleware(['auth']);
 
 
 require __DIR__.'/auth.php';
