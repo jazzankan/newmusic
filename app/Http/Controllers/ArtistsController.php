@@ -12,7 +12,8 @@ class ArtistsController extends Controller
      */
     public function index()
     {
-        //
+        $artists = Artists::all();
+        return view('artists.index', compact('artists'));
     }
 
     /**
@@ -28,7 +29,15 @@ class ArtistsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $attributes = request()->validate([
+            'name' => 'required | min:4',
+            'spotify_id' => 'required | min:22 | max:22',
+            'comment' => 'nullable | max:200',
+
+        ]);
+        Artists::create($attributes);
+
+        return redirect('/');
     }
 
     /**
