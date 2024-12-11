@@ -1,14 +1,15 @@
 <div>
-    <p wire:click.prevent="getalbums" class="mb-4"><a class="btn-blue" href="">Sök nya</a></p>
-    @if($artAlbArray)
+    <p class="mb-4">Nya album sedan {{ $last_time }}:</p>
+    @if(count($artAlbArray) > 0)
     @foreach($artAlbArray as $key => $value)
-<b>{{ $key }}:</b><br>
+        <b>{{ $key }}:</b><br>
         @foreach($value as $v)
-            @if($v["release_date"] > 1950-01-01)
-        {{ $v["name"] }}<br>
-                @endif
-            @endforeach
+                {{ $v["name"] }}<br>
+        @endforeach
         <p>---</p>
     @endforeach
+    @else
+        <p>Inget nytt!</p>
         @endif
+
 </div>

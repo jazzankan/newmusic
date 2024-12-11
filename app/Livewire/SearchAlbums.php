@@ -11,19 +11,30 @@ use Illuminate\Support\Facades\Storage;
 class SearchAlbums extends Component
 {
     public $token;
-    public $artAlbArray = [];
+    public array $artAlbArray = [];
+    public array $albums_response;
+    public string $last_time;
+    public bool $later = false;
 
-    public function getall($token, $item, $album_resp)
+
+    public function mount()
     {
-        $next_response = Http::withHeaders(['Authorization' => 'Bearer ' . $token
-        ])->get(url: $album_resp["next"] . $item->spotify_id . '/albums')->json();
-        $album_resp = array_merge($album_resp, $next_response);
-        if (isset($album_resp["next"])) {
-            $this->getall($token, $item, $album_resp);
-        }
-        return $album_resp;
+        $this->last_time = file_get_contents('../lasttime.txt');
+        $this->getalbums();
     }
 
+    public function getall($token, $item, $response)
+    {
+        $next_response = Http::withHeaders(['Authorization' => 'Bearer ' . $token
+        ])->get(url: $response["next"] . $item->spotify_id . '/albums')->json();
+        $next_response["items"] = array_merge($response["items"], $next_response["items"]);
+        if (isset($next_response["next"])) {
+            $this->getall($token, $item, $next_response);
+        }
+        return $next_response;
+    }
+
+// isset($next_response["next"])
     public function getalbums()
     {
         $artists = Artists::all();
@@ -36,23 +47,31 @@ class SearchAlbums extends Component
         $artists->each(function ($item) {
             $art_response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->token
             ])->get(url: 'https://api.spotify.com/v1/artists/' . $item->spotify_id)->json();
-            $albums_response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->token
+            $this->albums_response = Http::withHeaders(['Authorization' => 'Bearer ' . $this->token
             ])->get(url: 'https://api.spotify.com/v1/artists/' . $item->spotify_id . '/albums')->json();
-            if (isset($albums_response["next"])) {
-                $albums_response = $this->getall($this->token, $item, $albums_response);
+            if (isset($this->albums_response["next"])) {
+                $this->albums_response = $this->getall($this->token, $item, $this->albums_response);
             }
-            $this->artAlbArray[$art_response["name"]] = $albums_response["items"];
 
+            $this->artAlbArray[$art_response["name"]] = $this->albums_response["items"];
         });
-
-        //dd($this->artAlbArray);
     }
-
-// Ellen id: 5N87utqQzCT8NHBW7JJXog
-// Gulin id: 4gquwMHteaMQ0ZQOMj9CsI
-
     public function render()
     {
+        foreach($this->artAlbArray as $artist => $art_album) {
+            $length = count($art_album);
+            for($i = 0; $i < $length; $i++) {
+                if ($art_album[$i]["release_date"] < $this->last_time) {
+                    unset($art_album[$i]);
+            }
+                $this->artAlbArray[$artist] = $art_album;
+                if(count($art_album) == 0){
+                    unset($this->artAlbArray[$artist]);
+                }
+            }
+        }
+
         return view('livewire.search-albums');
     }
 }
+
