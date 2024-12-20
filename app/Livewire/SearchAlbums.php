@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 use App\Models\Artists;
 use Illuminate\Support\Facades\Storage;
-
 class SearchAlbums extends Component
 {
     public $token;
@@ -56,8 +55,19 @@ class SearchAlbums extends Component
             $this->artAlbArray[$art_response["name"]] = $this->albums_response["items"];
         });
     }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div>
+           <b><p style="color:green;text-align:center;">Vänta! Jag letar...</p></b>
+        </div>
+        HTML;
+    }
     public function render()
     {
+        $today = date("Y-m-d");
+        file_put_contents("../lasttime.txt", $today);
         foreach($this->artAlbArray as $artist => $art_album) {
             $length = count($art_album);
             for($i = 0; $i < $length; $i++) {

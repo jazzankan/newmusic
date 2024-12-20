@@ -11,5 +11,4 @@
     @else
         <p>Inget nytt!</p>
         @endif
-
 </div>

@@ -12,7 +12,7 @@ class ArtistsController extends Controller
      */
     public function index()
     {
-        $artists = Artists::all();
+        $artists = Artists::all()->sortBy('name');
         return view('artists.index', compact('artists'));
     }
 
@@ -51,9 +51,15 @@ class ArtistsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Artists $artists)
+    public function edit(Request $request, Artists $artists)
     {
-        //
+        $requesturl = $request->getRequestUri();
+        preg_match_all('/\d+/', $requesturl, $matches);
+        $artist_id_todelete = $matches[0][0];
+        $artisttodestroy = Artists::where('id', $artist_id_todelete)->firstOrFail();
+        $this->destroy($artisttodestroy);
+        $artists = Artists::all()->sortBy('name');
+        return view('artists.index', compact('artists'));
     }
 
     /**
@@ -61,7 +67,7 @@ class ArtistsController extends Controller
      */
     public function update(Request $request, Artists $artists)
     {
-        //
+        return redirect('artists.index');
     }
 
     /**
@@ -69,6 +75,6 @@ class ArtistsController extends Controller
      */
     public function destroy(Artists $artists)
     {
-        //
+        $artists->delete();
     }
 }
