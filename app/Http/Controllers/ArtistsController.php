@@ -37,7 +37,7 @@ class ArtistsController extends Controller
         ]);
         Artists::create($attributes);
 
-        return redirect('/');
+        return redirect('/artists');
     }
 
     /**
@@ -58,6 +58,7 @@ class ArtistsController extends Controller
         $artist_id_todelete = $matches[0][0];
         $artisttodestroy = Artists::where('id', $artist_id_todelete)->firstOrFail();
         $this->destroy($artisttodestroy);
+        //$this->index();
         $artists = Artists::all()->sortBy('name');
         return view('artists.index', compact('artists'));
     }
